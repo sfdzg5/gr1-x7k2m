@@ -22,7 +22,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .f{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--mute)}
-.f input,.f select{font:inherit;font-size:.92rem;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:8px;padding:8px;width:100%;color-scheme:light dark}
+.f input,.f select{font:inherit;font-size:.92rem;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;width:100%;color-scheme:light dark}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .dow{font-size:.7rem;color:var(--mute);text-align:center;padding:2px 0}
 .c{min-height:62px;border:1px solid var(--line);background:transparent;border-radius:8px;padding:3px;text-align:left;display:flex;flex-direction:column;gap:2px}
@@ -57,6 +57,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .wr{font-size:.78rem;color:var(--warn);margin:6px 0 0}
 .bt{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px;font-size:.84rem;margin:2px 6px 0 0}
 .col{min-width:0}
+select option{background:var(--card);color:var(--ink)}
+select{color-scheme:light dark}
 .leg .t{display:inline-block;width:auto;padding:0 4px}
 @media (min-width:900px){
   main{max-width:1200px;padding:20px 24px 48px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);column-gap:20px;align-items:start}
@@ -110,6 +112,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
       <label class="f">Motivo si es menor (vacaciones…)<input id="mw" type="text"></label>
     </div>
     <div id="sum" style="margin-top:8px"></div>
+    <button class="bt" id="ics" type="button" style="margin-top:10px">📅 Añadir mis guardias a mi calendario</button>
+    <p class="wr" id="icsmsg" style="color:var(--mute)"></p>
   </div>
 
   <div class="card">
@@ -254,6 +258,26 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
       S.items=S.items.filter(function(x){return String(x.id)!==b.dataset.rm});save();render()}});
   }
 
+  function icsFecha(d,h){var p=d.split("-"),x=new Date(Date.UTC(+p[0],+p[1]-1,+p[2],h)),z=function(n){return String(n).padStart(2,"0")};
+    return x.getUTCFullYear()+z(x.getUTCMonth()+1)+z(x.getUTCDate())+"T"+z(x.getUTCHours())+z(x.getUTCMinutes())+"00"}
+  function icsMes(){
+    var m=mo(),g=IT().filter(function(x){return x.p===S.me&&x.d.slice(0,7)===m}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.a-b.a});
+    if(!g.length){$("icsmsg").textContent="No tienes guardias en este mes.";return}
+    var now=new Date(),z=function(n){return String(n).padStart(2,"0")},st=now.getUTCFullYear()+z(now.getUTCMonth()+1)+z(now.getUTCDate())+"T"+z(now.getUTCHours())+z(now.getUTCMinutes())+z(now.getUTCSeconds())+"Z";
+    var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Guardias EIR R1//ES","CALSCALE:GREGORIAN","X-WR-TIMEZONE:Europe/Madrid"];
+    g.forEach(function(x){
+      L.push("BEGIN:VEVENT","UID:"+x.d+"-"+x.l+"-"+x.a+"-"+S.me.replace(/\s+/g,"")+"@guardias-r1","DTSTAMP:"+st,
+        "DTSTART;TZID=Europe/Madrid:"+icsFecha(x.d,x.a),"DTEND;TZID=Europe/Madrid:"+icsFecha(x.d,x.b),
+        "SUMMARY:Guardia "+PL[x.l]+" ("+x.h+" h)","DESCRIPTION:Guardia de "+S.me+": "+PL[x.l]+", "+x.h+" h.",
+        "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:Guardia mañana","TRIGGER:-P1D","END:VALARM","END:VEVENT");
+    });
+    L.push("END:VCALENDAR");
+    var blob=new Blob([L.join("\r\n")],{type:"text/calendar;charset=utf-8"}),a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download="guardias-"+S.me.replace(/\s+/g,"-")+"-"+m+".ics";document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+    $("icsmsg").textContent=g.length+" guardia(s) descargadas. Ábrelas para añadirlas a tu calendario.";
+  }
+  $("ics").onclick=icsMes;
   function key(n,m){return n+"|"+m}
   function stats(n,m){var g=IT().filter(function(x){return x.p===n&&x.d.slice(0,7)===m}),o={tot:0,urg:0,nh:0,nr:0};
     g.forEach(function(x){o.tot+=x.h;if(x.l==="HRV"){o.urg+=x.h;o.nh++}else o.nr++});return o}
