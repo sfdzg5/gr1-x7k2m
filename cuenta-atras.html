@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cuenta atrás hasta el 5 de junio de 2028</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F5F8;--ink:#12263A;--mute:#5B6E80;--track:#D5DEE6;--a:#0F8B8D;--b:#C9772B;--card:#FFFFFF;--line:#C3CFDA;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0D1A27;--ink:#E8F0F6;--mute:#8DA2B4;--track:#1F3347;--a:#6FD3C3;--b:#F0B35C;--card:#132436;--line:#2A4259}
+}
+:root[data-theme="dark"]{--bg:#0D1A27;--ink:#E8F0F6;--mute:#8DA2B4;--track:#1F3347;--a:#6FD3C3;--b:#F0B35C;--card:#132436;--line:#2A4259}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Sora",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center}
+main{width:100%;max-width:1200px;min-height:100vh;min-height:100dvh;padding:16px 14px 20px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:12px}
+.side{width:100%;max-width:560px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+header{width:100%;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+h1{margin:0;font-size:1.05rem;font-weight:500;line-height:1.35;color:var(--mute);max-width:30ch}
+h1 strong{display:block;color:var(--ink);font-size:1.5rem;font-weight:700;letter-spacing:-.01em}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+#theme{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:.85rem}
+.dial{position:relative;width:min(88vw,42vh,520px);aspect-ratio:1;flex:none}
+.dial svg{width:100%;height:100%;display:block}
+.dial circle{fill:none}
+.center{position:absolute;inset:17%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:none;border:0;border-radius:50%;cursor:pointer}
+.big{font-size:clamp(2.4rem,13vw,4.6rem);font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.unit{margin-top:6px;font-size:1.05rem;color:var(--a);font-weight:500}
+.sub{margin-top:8px;font-size:1rem;color:var(--mute);font-variant-numeric:tabular-nums;min-height:1.4em}
+.hint{margin-top:10px;font-size:.78rem;color:var(--mute)}
+.modes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.modes button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:.88rem}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.facts{width:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.facts>div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.facts label,.facts span.k{display:block;font-size:.8rem;color:var(--mute);margin-bottom:6px}
+.facts input{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:8px;padding:6px 8px;color-scheme:light dark}
+.facts .v{font-size:1.15rem;font-weight:700;font-variant-numeric:tabular-nums}
+.bar{grid-column:1/-1}
+.track{height:10px;border-radius:999px;background:var(--track);overflow:hidden;margin-top:8px}
+.fill{height:100%;background:var(--a);border-radius:999px}
+#msg{min-height:1.3em;margin:0;font-size:.88rem;color:var(--b);text-align:center}
+@media (prefers-reduced-motion:no-preference){.fill{transition:width .6s}}
+@media (min-width:900px){
+  main{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;align-items:center;justify-items:center;column-gap:40px;padding:28px 40px 36px}
+  header{grid-column:1/-1}
+  .dial{width:min(46vw,78vh,640px)}
+  .side{max-width:none;justify-self:stretch;gap:22px}
+  h1{max-width:none}
+  h1 strong{font-size:2rem}
+}
+@media (max-height:640px) and (max-width:899px){.dial{width:min(80vw,60vh)}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Cuenta atrás hasta el<strong id="title">5 de junio de 2028</strong></h1>
+    <button id="theme" type="button" aria-label="Cambiar entre tema claro y oscuro">Tema</button>
+  </header>
+
+  <div class="dial">
+    <svg viewBox="0 0 400 400" aria-hidden="true">
+      <circle cx="200" cy="200" r="170" stroke="var(--track)" stroke-width="14"/>
+      <circle id="ring" cx="200" cy="200" r="170" stroke="var(--a)" stroke-width="14" stroke-linecap="round" transform="rotate(-90 200 200)"/>
+      <circle id="knob" r="11" fill="var(--b)" stroke="var(--bg)" stroke-width="4"/>
+      <circle cx="200" cy="200" r="144" stroke="var(--track)" stroke-width="3"/>
+      <circle id="sec" cx="200" cy="200" r="144" stroke="var(--b)" stroke-width="3" transform="rotate(-90 200 200)"/>
+    </svg>
+    <button class="center" id="center" type="button" aria-label="Cambiar la unidad de medida">
+      <span class="big" id="big">0</span>
+      <span class="unit" id="unit">días</span>
+      <span class="sub" id="sub"></span>
+      <span class="hint">Toca para cambiar</span>
+    </button>
+  </div>
+
+  <div class="side">
+  <div class="modes" id="modes" role="group" aria-label="Unidad del contador"></div>
+  <p id="msg" role="status"></p>
+
+  <section class="facts" aria-label="Fechas y progreso">
+    <div><label for="start">Inicio</label><input id="start" type="date" value="2026-06-01"></div>
+    <div><label for="end">Fin</label><input id="end" type="date" value="2028-06-05"></div>
+    <div><span class="k">Días transcurridos</span><span class="v" id="elapsed">–</span></div>
+    <div><span class="k">Progreso</span><span class="v" id="pct">–</span></div>
+    <div class="bar"><span class="k" id="barlabel">Del inicio al fin</span><div class="track"><div class="fill" id="fill" style="width:0"></div></div></div>
+  </section>
+  </div>
+</main>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var R=170,C=2*Math.PI*R,RS=144,CS=2*Math.PI*RS;
+  var start=new Date(2026,5,1),end=new Date(2028,5,5);
+  var modes=[["Desglose"],["Días"],["Semanas"],["Horas"],["Minutos"],["Segundos"]],mode=0;
+  var fmt=new Intl.NumberFormat("es-ES"),pfmt=new Intl.NumberFormat("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2});
+  var dfmt=function(d){return d.toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric"})};
+  var pad=function(n){return String(n).padStart(2,"0")};
+  var ring=$("ring"),sec=$("sec");
+  ring.style.strokeDasharray=C;sec.style.strokeDasharray=CS;
+
+  var box=$("modes");
+  modes.forEach(function(m,i){
+    var b=document.createElement("button");b.type="button";b.textContent=m[0];
+    b.setAttribute("aria-pressed",i===mode);
+    b.onclick=function(){setMode(i)};box.appendChild(b);
+  });
+  function setMode(i){
+    mode=i;[].forEach.call(box.children,function(b,j){b.setAttribute("aria-pressed",j===i)});tick();
+  }
+  $("center").onclick=function(){setMode((mode+1)%modes.length)};
+
+  function readDate(v){var p=v.split("-");return p.length===3?new Date(+p[0],+p[1]-1,+p[2]):null}
+  function onDates(){
+    var s=readDate($("start").value),e=readDate($("end").value);
+    if(!s||!e||isNaN(s)||isNaN(e)){$("msg").textContent="Elige una fecha válida en inicio y fin.";return}
+    if(e<=s){$("msg").textContent="La fecha de fin debe ser posterior a la de inicio.";return}
+    $("msg").textContent="";start=s;end=e;tick();
+  }
+  $("start").onchange=onDates;$("end").onchange=onDates;
+
+  var themes=["auto","light","dark"],ti=0;
+  $("theme").onclick=function(){
+    ti=(ti+1)%3;var r=document.documentElement;
+    if(themes[ti]==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",themes[ti]);
+    $("theme").textContent=["Tema","Tema claro","Tema oscuro"][ti];
+  };
+
+  function tick(){
+    var now=new Date(),total=end-start;
+    var left=Math.max(0,end-now),done=Math.min(Math.max(now-start,0),total),p=done/total;
+    ring.style.strokeDashoffset=C*(1-p);
+    var a=p*2*Math.PI-Math.PI/2;
+    $("knob").setAttribute("cx",200+R*Math.cos(a));$("knob").setAttribute("cy",200+R*Math.sin(a));
+    var sf=(now.getSeconds()+now.getMilliseconds()/1000)/60;
+    sec.style.strokeDashoffset=CS*(1-sf);
+
+    var d=Math.floor(left/864e5),h=Math.floor(left%864e5/36e5),mi=Math.floor(left%36e5/6e4),s=Math.floor(left%6e4/1e3);
+    var big,unit,sub="restantes";
+    if(left===0){big="0";unit="días";sub="¡Llegó el día!"}
+    else if(mode===0){big=fmt.format(d);unit=d===1?"día":"días";sub=pad(h)+" h  "+pad(mi)+" min  "+pad(s)+" s"}
+    else if(mode===1){big=fmt.format(d);unit=d===1?"día":"días"}
+    else if(mode===2){var w=Math.floor(d/7);big=fmt.format(w);unit=w===1?"semana":"semanas";sub="y "+(d%7)+(d%7===1?" día":" días")}
+    else if(mode===3){big=fmt.format(Math.floor(left/36e5));unit="horas"}
+    else if(mode===4){big=fmt.format(Math.floor(left/6e4));unit="minutos"}
+    else{big=fmt.format(Math.floor(left/1e3));unit="segundos"}
+    $("big").textContent=big;$("unit").textContent=unit;$("sub").textContent=sub;
+
+    var td=Math.round(total/864e5),ed=Math.floor(done/864e5);
+    $("elapsed").textContent=fmt.format(ed)+" de "+fmt.format(td);
+    $("pct").textContent=pfmt.format(p*100)+" %";
+    $("fill").style.width=(p*100)+"%";
+    $("title").textContent=dfmt(end);
+    $("barlabel").textContent=now<start?"Empieza el "+dfmt(start):"Del "+dfmt(start)+" al "+dfmt(end);
+    document.title="Faltan "+fmt.format(d)+" días hasta el "+dfmt(end);
+  }
+  tick();setInterval(tick,100);
+})();
+</script>
+</body>
+</html>
