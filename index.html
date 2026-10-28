@@ -57,6 +57,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .wr{font-size:.78rem;color:var(--warn);margin:6px 0 0}
 .bt{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px;font-size:.84rem;margin:2px 6px 0 0}
 .col{min-width:0}
+input[readonly]{opacity:.75;cursor:not-allowed}
 select option{background:var(--card);color:var(--ink)}
 select{color-scheme:light dark}
 .leg .t{display:inline-block;width:auto;padding:0 4px}
@@ -120,13 +121,13 @@ select{color-scheme:light dark}
   <div class="card">
     <h2>Sueldo estimado del mes</h2>
     <div class="grid">
-      <label class="f">Sueldo base mensual (€)<input id="pb" type="number" inputmode="decimal" min="0" step="0.01"></label>
-      <label class="f">€/hora laborable (L–V)<input id="pl" type="number" inputmode="decimal" min="0" step="0.01"></label>
-      <label class="f">€/hora sábado<input id="ps" type="number" inputmode="decimal" min="0" step="0.01"></label>
-      <label class="f">€/hora domingo o festivo<input id="pf" type="number" inputmode="decimal" min="0" step="0.01"></label>
+      <label class="f">€/hora no festiva (L–S)<input id="pl" type="number" readonly tabindex="-1" inputmode="decimal" min="0" step="any"></label>
+      <label class="f">€/hora festiva (domingo y festivos)<input id="pf" type="number" readonly tabindex="-1" inputmode="decimal" min="0" step="any"></label>
+      <label class="f">Sueldo base mensual (€, opcional)<input id="pb" type="number" readonly tabindex="-1" inputmode="decimal" min="0" step="any"></label>
+      <label class="f">Retención de IRPF (%)<input id="pi" type="number" inputmode="decimal" min="0" max="60" step="any"></label>
     </div>
     <div id="pay" style="margin-top:8px"></div>
-    <p class="sub" style="margin:6px 0 0;padding:0">Estimación bruta con las guardias elegidas. Los importes por hora son de ejemplo: pon los de tu nómina. Se guardan solo en este navegador.</p>
+    <p class="sub" style="margin:6px 0 0;padding:0">Estimación bruta con las guardias elegidas. Las horas salen solas de las guardias que has elegido. Importes brutos fijos. Solo puedes cambiar el porcentaje de IRPF, que se guarda solo en este navegador.</p>
   </div>
 
   <div class="card">
@@ -176,9 +177,9 @@ select{color-scheme:light dark}
       net("Conectado con el Drive de prueba · "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}),"ok");render()
     }).catch(function(){ONLINE=false;net("Sin conexión con el Drive: modo local (lo que elijas no se comparte).","wr")})}
   function send(o){return fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)}).then(function(r){return r.json()})}
-  var ORD0=R1.slice(),FEST=["2026-12-08","2026-12-25","2027-01-01","2027-01-06","2027-01-29","2027-03-05","2027-03-25","2027-03-26","2027-04-23","2027-08-16","2027-10-12","2027-11-01","2027-12-06","2027-12-08","2027-12-24","2027-12-31"],S={items:[],me:R1[0],round:1,ti:0,min:{},pay:{base:1125,lab:12,sab:14,fes:16}},sel="2027-01-01";
+  var ORD0=R1.slice(),FEST=["2026-12-08","2026-12-25","2027-01-01","2027-01-06","2027-01-29","2027-03-05","2027-03-25","2027-03-26","2027-04-23","2027-08-16","2027-10-12","2027-11-01","2027-12-06","2027-12-08","2027-12-24","2027-12-31"],S={items:[],me:R1[0],round:1,ti:0,min:{},pay:{v:2,base:1199.52,nf:15.71,fe:16.83,irpf:0}},sel="2027-01-01";
   var KEY="elegir-guardias-r1";
-  try{var s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.items){S.items=s.items;S.me=s.me||S.me;S.round=Math.min(2,s.round||1);S.ti=s.ti||0;S.min=s.min||{};if(s.pay)S.pay=s.pay}}catch(e){}
+  try{var s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.items){S.items=s.items;S.me=s.me||S.me;S.round=Math.min(2,s.round||1);S.ti=s.ti||0;S.min=s.min||{};if(s.pay&&s.pay.v===2)S.pay=s.pay}}catch(e){}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
   var dn=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
   var mn=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
@@ -292,23 +293,23 @@ select{color-scheme:light dark}
   }
   $("ics").onclick=icsMes;
   var eur=new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"});
-  function tipoDia(d){return isFE(d)?"fes":(pd(d).getDay()===6?"sab":"lab")}
   function pay(m){
-    var P=S.pay,f={pb:"base",pl:"lab",ps:"sab",pf:"fes"};
-    Object.keys(f).forEach(function(i){if(document.activeElement!==$(i))$(i).value=P[f[i]]});
-    var H={lab:0,sab:0,fes:0};
-    IT().forEach(function(x){if(x.p===S.me&&x.c==="R1"&&x.d.slice(0,7)===m)H[tipoDia(x.d)]+=x.h});
-    var g=H.lab*P.lab+H.sab*P.sab+H.fes*P.fes;
+    var P={base:1199.52,nf:15.71,fe:16.83,irpf:S.pay.irpf||0},f={pb:"base",pl:"nf",pf:"fe",pi:"irpf"};
+    Object.keys(f).forEach(function(i){if(document.activeElement!==$(i))$(i).value=P[f[i]]||""});
+    var H={nf:0,fe:0};
+    IT().forEach(function(x){if(x.p===S.me&&x.c==="R1"&&x.d.slice(0,7)===m)H[isFE(x.d)?"fe":"nf"]+=x.h});
     function r(a,b){return'<div class="row"><span>'+a+'</span><span>'+b+'</span></div>'}
-    $("pay").innerHTML=r("Sueldo base",eur.format(P.base))+
-      r("Guardias laborables · "+H.lab+" h",eur.format(H.lab*P.lab))+
-      r("Guardias sábado · "+H.sab+" h",eur.format(H.sab*P.sab))+
-      r("Guardias domingo/festivo · "+H.fes+" h",eur.format(H.fes*P.fes))+
-      r("<b>Total bruto estimado</b>","<b>"+eur.format(P.base+g)+"</b>");
+    var sin=!P.nf&&!P.fe,br=P.base+H.nf*P.nf+H.fe*P.fe;
+    $("pay").innerHTML=r("Horas no festivas (L–S)",H.nf+" h"+(sin?"":" · "+eur.format(H.nf*P.nf)))+
+      r("Horas festivas (domingos y festivos)",H.fe+" h"+(sin?"":" · "+eur.format(H.fe*P.fe)))+
+      r("Horas totales",(H.nf+H.fe)+" h")+
+      (sin?'<p class="wr">Escribe los €/hora para ver el importe.</p>':
+        r("Guardias del mes",eur.format(H.nf*P.nf+H.fe*P.fe))+(P.base?r("Sueldo base",eur.format(P.base)):"")+
+        r("<b>Total bruto estimado</b>","<b>"+eur.format(br)+"</b>")+
+        (P.irpf?r("IRPF ("+P.irpf.toLocaleString("es-ES")+" %)","− "+eur.format(br*P.irpf/100))+r("<b>Total tras IRPF</b>","<b>"+eur.format(br*(1-P.irpf/100))+"</b>"):""));
   }
-  Object.keys({pb:"base",pl:"lab",ps:"sab",pf:"fes"}).forEach(function(i){
-    var k={pb:"base",pl:"lab",ps:"sab",pf:"fes"}[i];
-    $(i).oninput=function(){S.pay[k]=Math.max(0,+$(i).value||0);save();pay(mo())}});
+  [["pi","irpf"]].forEach(function(a){
+    $(a[0]).oninput=function(){S.pay[a[1]]=Math.min(60,Math.max(0,+$(a[0]).value||0));save();pay(mo())}});
   function key(n,m){return n+"|"+m}
   function stats(n,m){var g=IT().filter(function(x){return x.p===n&&x.d.slice(0,7)===m}),o={tot:0,urg:0,nh:0,nr:0};
     g.forEach(function(x){o.tot+=x.h;if(x.l==="HRV"){o.urg+=x.h;o.nh++}else o.nr++});return o}
