@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Borrador · Elegir guardias R1</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F6F5;--ink:#10272B;--mute:#587174;--card:#FFFFFF;--line:#C9D8D6;--a:#0E7C86;--bad:#B3261E;--ok:#13795B;--warn:#B8651B;--we:#E8F0EF;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1A1D;--ink:#E6F0EF;--mute:#8FA9AB;--card:#12262A;--line:#264045;--a:#5CCBD6;--bad:#FF8A80;--ok:#6FD6B0;--warn:#F0AE68;--we:#17302F}}
+:root[data-theme="dark"]{--bg:#0C1A1D;--ink:#E6F0EF;--mute:#8FA9AB;--card:#12262A;--line:#264045;--a:#5CCBD6;--bad:#FF8A80;--ok:#6FD6B0;--warn:#F0AE68;--we:#17302F}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Sora",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;justify-content:center}
+main{width:100%;max-width:680px;padding:18px 12px 48px}
+h1{margin:0 0 4px;font-size:1.25rem;padding:0 4px}
+h2{margin:0 0 8px;font-size:1rem}
+.sub{margin:0 0 12px;font-size:.8rem;color:var(--mute);padding:0 4px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--mute)}
+.f input,.f select{font:inherit;font-size:.92rem;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;width:100%;color-scheme:light dark}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dow{font-size:.7rem;color:var(--mute);text-align:center;padding:2px 0}
+.c{min-height:62px;border:1px solid var(--line);background:transparent;border-radius:8px;padding:3px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.c.we{background:var(--we)}
+.c.sel{outline:3px solid var(--a);outline-offset:-1px}
+.c[disabled]{visibility:hidden}
+.c .n{font-size:.72rem;color:var(--mute)}
+.c.fe .n{color:var(--warn);font-weight:700}
+.tg{display:flex;flex-wrap:wrap;gap:2px}
+.t{font-size:.62rem;font-weight:700;border-radius:4px;padding:0 3px;line-height:1.35;border:1px solid transparent}
+.t.f{color:var(--ok);border-color:var(--ok)}
+.t.x{color:var(--bad);text-decoration:line-through;border-color:var(--bad);opacity:.8}
+.t.m{background:var(--a);color:var(--bg)}
+.leg{display:flex;flex-wrap:wrap;gap:10px;font-size:.74rem;color:var(--mute);margin-top:8px}
+.pl{border-top:1px solid var(--line);padding:10px 0}
+.pl:first-of-type{border:0}
+.occ{font-size:.8rem;color:var(--mute);margin:3px 0 6px}
+.acts{display:flex;flex-wrap:wrap;gap:6px}
+.b{border:1px solid var(--a);background:transparent;color:var(--a);border-radius:8px;padding:6px 10px;font-size:.85rem;font-weight:600}
+.b[disabled]{border-color:var(--line);color:var(--mute);cursor:not-allowed;font-weight:400}
+.b.rm{border-color:var(--bad);color:var(--bad)}
+.why{font-size:.78rem;color:var(--bad);margin:6px 0 0}
+.chk{display:flex;gap:8px;align-items:center;font-size:.82rem;margin:0 0 6px}
+.scroll{overflow-x:auto}
+.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:.88rem;font-variant-numeric:tabular-nums}
+.row:last-child{border:0}
+.ok{color:var(--ok)}.no{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{font-size:.76rem;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--mute)}
+.chip.cur{background:var(--a);color:var(--bg);border-color:var(--a);font-weight:700}
+.chip.done{text-decoration:line-through;opacity:.6}
+.wr{font-size:.78rem;color:var(--warn);margin:6px 0 0}
+.bt{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px;font-size:.84rem;margin:2px 6px 0 0}
+.col{min-width:0}
+select option{background:var(--card);color:var(--ink)}
+select{color-scheme:light dark}
+.leg .t{display:inline-block;width:auto;padding:0 4px}
+@media (min-width:900px){
+  main{max-width:1200px;padding:20px 24px 48px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);column-gap:20px;align-items:start}
+  .head{grid-column:1/-1}
+  .c{min-height:78px}
+  .t{font-size:.68rem}
+}
+@media (max-width:420px){
+  main{padding:12px 8px 40px}
+  .card{padding:10px}
+  .grid{grid-template-columns:1fr}
+  .c{min-height:54px;padding:2px}
+  .t{font-size:.58rem;padding:0 2px}
+  .b{padding:7px 9px;font-size:.82rem}
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="head">
+  <h1>Elegir guardias R1</h1>
+  <p class="sub">Borrador conectado a las hojas PRUEBA del Drive: las guardias de los calendarios y las elecciones de los demás se cargan solas.</p>
+  <p id="net" class="wr"></p>
+  </div>
+
+  <div class="col">
+
+  <div class="card">
+    <div class="grid">
+      <label class="f">Soy<select id="me"></select></label>
+      <label class="f">Mes<input id="mes" type="month" value="2027-01"></label>
+      <label class="f">Ronda<select id="rd"><option value="1">1ª: festivo 14 h y hasta 35 h</option><option value="2">2ª: festivos y turnos extra (inversa)</option></select></label>
+    </div>
+    <div id="turn"></div>
+  </div>
+
+  <div class="card">
+    <h2 id="mt">Calendario</h2>
+    <div class="cal" id="cal" role="grid"></div>
+    <div class="leg"><span><span class="t f">A</span> libre para ti</span><span><span class="t x">A</span> no disponible</span><span><span class="t m">A</span> tu guardia</span><span>H HRV · A Alfajarín · V Villamayor · Z Zuera</span></div>
+  </div>
+
+  <div class="card" id="day"></div>
+  </div>
+
+  <div class="col">
+  <div class="card">
+    <h2>Tu mes</h2>
+    <div class="grid">
+      <label class="f">Mi mínimo este mes (h)<input id="mn" type="number" min="0" max="60" step="1" value="35"></label>
+      <label class="f">Motivo si es menor (vacaciones…)<input id="mw" type="text"></label>
+    </div>
+    <div id="sum" style="margin-top:8px"></div>
+    <button class="bt" id="ics" type="button" style="margin-top:10px">📅 Añadir mis guardias a mi calendario</button>
+    <p class="wr" id="icsmsg" style="color:var(--mute)"></p>
+  </div>
+
+  <div class="card">
+    <h2>Lo que lleva cada uno (horas)</h2>
+    <div class="scroll"><table id="all"></table></div>
+  </div>
+
+  <div class="card">
+    <h2>Cierre de mes</h2>
+    <button class="bt" id="cl" type="button">Revisar a todos los R1</button>
+    <div id="cierre"></div>
+  </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var R1=["Leire","Laura","Miriam Martin","Esther","Andrea","Miriam Millan","Sergio","Ana"];
+  var PL={HRV:"HRV (urgencias)",ALF:"Alfajarín",VIL:"Villamayor",ZUE:"Zuera"},LT={HRV:"H",ALF:"A",VIL:"V",ZUE:"Z"};
+  var R2=[
+    ["2026-12-01","HRV","Claudia",7],["2026-12-03","HRV","Juncal",7],["2026-12-03","ALF","Laura",5],["2026-12-06","HRV","Jaime",14],
+    ["2026-12-08","ALF","Jaime",14],["2026-12-10","HRV","Laura",7],["2026-12-10","VIL","Rebeca",5],["2026-12-13","HRV","Jaime",7],
+    ["2026-12-13","ALF","Álvaro",14],["2026-12-14","VIL","Juncal",5],["2026-12-15","HRV","Rebeca",7],["2026-12-16","ALF","Juncal",5],
+    ["2026-12-17","HRV","Sofía",7],["2026-12-24","ALF","Sofía",14],["2026-12-24","ALF","Álvaro",24],["2026-12-24","VIL","Claudia",24],
+    ["2026-12-24","HRV","Jaime",14],["2026-12-26","ALF","Claudia",14],["2026-12-29","HRV","Álvaro",7],["2026-12-31","ALF","Laura",24],
+    ["2026-12-31","VIL","Juncal",14],["2026-12-31","ZUE","Rebeca",14],
+    ["2027-01-07","VIL","Rebeca",15],["2027-01-07","ALF","Jaime",5],["2027-01-10","ALF","Álvaro",24],["2027-01-10","HRV","Jaime",14],
+    ["2027-01-12","HRV","Claudia",7],["2027-01-13","HRV","Álvaro",7],["2027-01-14","ALF","Juncal",5],["2027-01-17","ALF","Laura",24],
+    ["2027-01-18","ALF","Juncal",5],["2027-01-19","HRV","Sofía",7],["2027-01-20","HRV","Rebeca",7],["2027-01-21","HRV","Laura",7],
+    ["2027-01-24","ALF","Claudia",24],["2027-01-25","HRV","Juncal",7],["2027-01-27","VIL","Juncal",5],["2027-01-27","ALF","Sofía",15]
+  ].map(function(r){return{d:r[0],l:r[1],p:r[2],h:r[3],c:"R2"}});
+  var CALR1=[];
+  function IT(){return CALR1.concat(S.items)}
+  var API="https://script.google.com/macros/s/AKfycbz1XM8YVIzOsMXJ1z_QMpCsQ4oWKauZ79YCMyQ1jCOtGUozUV_5TCdz36ygRsRNLz9p/exec",REMOTE={},ONLINE=false,R2BASE=R2.slice();
+  var LNAME={HRV:"HRV",ALF:"Alfajarín",VIL:"Villamayor",ZUE:"Zuera"},LCODE={"HRV":"HRV","Alfajarín":"ALF","Villamayor":"VIL","Zuera":"ZUE"};
+  function rebuild(){var ms=Object.keys(REMOTE);
+    R2=R2BASE.filter(function(x){return ms.indexOf(x.d.slice(0,7))<0});CALR1=[];S.items=[];
+    ms.forEach(function(k){
+      REMOTE[k].cal.forEach(function(g){var o={id:"cal"+Math.random(),d:g.fecha,l:LCODE[g.lugar]||"HRV",p:g.persona,h:g.horas||0,c:g.curso,r:0,a:g.ini==null?0:g.ini,b:g.fin==null?99:g.fin};if(g.curso==="R2")R2.push(o);else CALR1.push(o)});
+      REMOTE[k].el.forEach(function(e){S.items.push({id:e.id,p:e.persona,c:"R1",r:+e.ronda||1,d:e.fecha,l:LCODE[e.lugar]||"HRV",a:e.ini,b:e.fin,h:e.horas})});
+    })}
+  function net(x,c){var e=$("net");if(e){e.textContent=x;e.className=c||"wr"}}
+  function refresh(){var m=$("mes").value;if(!m)return Promise.resolve();
+    return fetch(API+"?mes="+m).then(function(r){return r.json()}).then(function(j){
+      if(!j.ok)throw 0;REMOTE[m]={cal:j.calendario,el:j.elecciones};ONLINE=true;rebuild();
+      net("Conectado con el Drive de prueba · "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}),"ok");render()
+    }).catch(function(){ONLINE=false;net("Sin conexión con el Drive: modo local (lo que elijas no se comparte).","wr")})}
+  function send(o){return fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)}).then(function(r){return r.json()})}
+  var ORD0=R1.slice(),FEST=["2026-12-08","2026-12-25","2027-01-01","2027-01-06","2027-01-29","2027-03-05","2027-03-25","2027-03-26","2027-04-23","2027-08-16","2027-10-12","2027-11-01","2027-12-06","2027-12-08","2027-12-24","2027-12-31"],S={items:[],me:R1[0],round:1,ti:0,min:{}},sel="2027-01-01";
+  var KEY="elegir-guardias-r1";
+  try{var s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.items){S.items=s.items;S.me=s.me||S.me;S.round=Math.min(2,s.round||1);S.ti=s.ti||0;S.min=s.min||{}}}catch(e){}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+  var dn=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  var mn=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  var pd=function(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])};
+  var ov=function(a,b){return a.a<b.b&&b.a<a.b};
+
+  $("me").innerHTML=R1.map(function(n){return"<option>"+n+"</option>"}).join("");$("me").value=S.me;
+  $("me").onchange=function(){S.me=$("me").value;save();render()};
+  $("mes").onchange=function(){sel=$("mes").value+"-01";S.ti=0;render();refresh()};
+  $("rd").value=S.round;
+  $("rd").onchange=function(){S.round=+$("rd").value;S.ti=0;S.me=seq(mo())[0];$("me").value=S.me;save();render()};
+  $("cl").onclick=function(){cierre()};
+
+  function isFE(d){return pd(d).getDay()===0||FEST.indexOf(d)>=0}
+  function isWE(d){return pd(d).getDay()===6||isFE(d)}
+  function turnos(d,l){
+    if(l==="HRV")return isWE(d)?[{h:7,a:8,b:15},{h:7,a:15,b:22},{h:14,a:8,b:22}]:[{h:7,a:15,b:22}];
+    return isWE(d)?[{h:14,a:8,b:22}]:[{h:5,a:17,b:22}];
+  }
+  function occ(d,l,ign){return R2.filter(function(x){return x.d===d&&x.l===l}).concat(IT().filter(function(x){return x.d===d&&x.l===l&&x.id!==ign}))}
+  function mo(){return $("mes").value}
+  function myTot(ign){var m=mo();return IT().filter(function(x){return x.p===S.me&&x.d.slice(0,7)===m&&x.id!==ign}).reduce(function(a,x){return a+x.h},0)}
+  function base(d,l,t,ign){
+    var mine=IT().filter(function(x){return x.p===S.me&&x.d===d&&x.id!==ign&&ov(t,x)})[0];
+    if(mine)return"Ya tienes otra guardia a esa hora ("+PL[mine.l]+").";
+    var o=occ(d,l,ign);
+    if(l==="HRV"){var r=IT().filter(function(x){return x.d===d&&x.l==="HRV"&&x.id!==ign&&ov(t,x)})[0];return r?"Ya hay un R1 en el HRV a esa hora ("+r.p+").":""}
+    if(l==="ZUE")return o.length>=2?"Zuera ya tiene dos residentes ese día.":"";
+    return o.length?"Ya hay un EIR ese día ("+o[0].c+" "+o[0].p+").":"";
+  }
+  function why(d,l,t,ign){
+    var w=base(d,l,t,ign);if(w)return w;
+    if(S.round===1){
+      var m=d.slice(0,7);
+      if(t.h===14&&IT().some(function(x){return x.p===S.me&&x.r===1&&x.h===14&&x.d.slice(0,7)===m&&x.id!==ign}))return"En la 1ª ronda solo puedes elegir 1 festivo de 14 h.";
+      if(myTot(ign)+t.h>40)return"Pasarías de 40 h en la 1ª ronda.";
+    }
+    return"";
+  }
+  function st(d,l){
+    if(IT().some(function(x){return x.p===S.me&&x.d===d&&x.l===l}))return"m";
+    return turnos(d,l).some(function(t){return!why(d,l,t)})?"f":"x";
+  }
+
+  function order(m){var i=(((+m.slice(0,4)-2026)*12+(+m.slice(5))-7)%8+8)%8;return ORD0.slice(i).concat(ORD0.slice(0,i))}
+  function seq(m){var o=order(m);return S.round===1?o:o.slice().reverse()}
+  function turn(m){
+    var q=seq(m),cur=q[S.ti];
+    $("turn").innerHTML='<div class="chips">'+q.map(function(n,i){return'<span class="chip'+(i===S.ti?' cur':'')+(i<S.ti?' done':'')+'">'+(i+1)+'. '+n+'</span>'}).join("")+'</div>'+
+      '<b>'+(cur?'Turno de '+cur:'Ronda terminada')+'</b> <button class="bt" id="nx" type="button">Siguiente turno</button>'+
+      (cur&&cur!==S.me?'<p class="wr">Ahora le toca a '+cur+'; estás viendo la elección como '+S.me+'.</p>':'');
+    $("nx").onclick=function(){S.ti=Math.min(8,S.ti+1);if(q[S.ti])S.me=q[S.ti];$("me").value=S.me;save();render()};
+  }
+  function render(){
+    var m=$("mes").value;if(!m)return;turn(m);
+    var y=+m.slice(0,4),mo=+m.slice(5),n=new Date(y,mo,0).getDate(),off=(new Date(y,mo-1,1).getDay()+6)%7;
+    $("mt").textContent=mn[mo-1].charAt(0).toUpperCase()+mn[mo-1].slice(1)+" "+y;
+    var h=["L","M","X","J","V","S","D"].map(function(x){return'<div class="dow">'+x+'</div>'}).join("");
+    for(var i=0;i<off;i++)h+='<button class="c" disabled></button>';
+    for(var d=1;d<=n;d++){
+      var ds=m+"-"+String(d).padStart(2,"0"),fe=isFE(ds);
+      h+='<button class="c'+(isWE(ds)?' we':'')+(fe?' fe':'')+(ds===sel?' sel':'')+'" data-d="'+ds+'" aria-label="'+d+' de '+mn[mo-1]+'"><span class="n">'+d+'</span><span class="tg">'+
+        Object.keys(PL).map(function(l){return'<span class="t '+st(ds,l)+'">'+LT[l]+'</span>'}).join("")+'</span></button>';
+    }
+    $("cal").innerHTML=h;
+    [].forEach.call($("cal").querySelectorAll("button[data-d]"),function(b){b.onclick=function(){sel=b.dataset.d;render()}});
+    day();summary(m);todos(m);
+  }
+
+  function day(){
+    var d=sel,dt=pd(d),h='<h2>'+dn[dt.getDay()]+' '+dt.getDate()+' de '+mn[dt.getMonth()]+'</h2>'+
+      (isFE(d)?'<p class="occ">Día festivo: se hacen guardias de fin de semana.</p>':'');
+    Object.keys(PL).forEach(function(l){
+      var o=occ(d,l),ts=turnos(d,l),why1="",wr=0;
+      h+='<div class="pl"><b>'+PL[l]+'</b><div class="occ">'+(o.length?o.map(function(x){return x.c+" "+x.p+" ("+x.h+" h)"}).join(" · "):"Sin nadie apuntado")+'</div><div class="acts">';
+      S.items.filter(function(x){return x.p===S.me&&x.d===d&&x.l===l}).forEach(function(x){
+        h+='<button class="b rm" data-rm="'+x.id+'">Quitar mi guardia ('+x.h+' h)</button>'});
+      ts.forEach(function(t,i){var w=why(d,l,t);if(w&&!why1)why1=w;
+        var wn=!w&&S.round===1&&myTot()+t.h>35;if(wn)wr=1;
+        h+='<button class="b" data-l="'+l+'" data-i="'+i+'"'+(w?' disabled':'')+'>'+t.a+'–'+t.b+' h ('+t.h+' h)'+(wn?' ⚠':'')+'</button>'});
+      h+='</div>'+(why1?'<p class="why">No disponible: '+why1+'</p>':'')+(wr?'<p class="wr">⚠ Con esa guardia te pasarías de 35 h. Puedes elegirla, pero deja huecos a los demás.</p>':'')+'</div>';
+    });
+    $("day").innerHTML=h;
+    [].forEach.call($("day").querySelectorAll("[data-l]"),function(b){b.onclick=function(){
+      var l=b.dataset.l,t=turnos(d,l)[+b.dataset.i];if(why(d,l,t))return;
+      if(ONLINE){b.disabled=true;send({accion:"anadir",persona:S.me,fecha:d,lugar:LNAME[l],ini:t.a,fin:t.b,ronda:S.round}).then(function(j){return refresh().then(function(){if(!j.ok)net(j.error||"No se pudo guardar.","no");else if(j.avisos&&j.avisos.length)net("Guardada, pero: "+j.avisos.join(" · "),"wr")})}).catch(function(){net("No se pudo guardar. Inténtalo de nuevo.","no")});return}
+      S.items.push({id:Date.now()+Math.random(),p:S.me,c:"R1",r:S.round,d:d,l:l,a:t.a,b:t.b,h:t.h});save();render()}});
+    [].forEach.call($("day").querySelectorAll("[data-rm]"),function(b){b.onclick=function(){
+      if(ONLINE){b.disabled=true;send({accion:"quitar",persona:S.me,id:b.dataset.rm}).then(function(j){return refresh().then(function(){if(!j.ok)net(j.error||"No se pudo quitar.","no");else if(j.avisos&&j.avisos.length)net("Quitada, pero: "+j.avisos.join(" · "),"wr")})}).catch(function(){net("No se pudo quitar. Inténtalo de nuevo.","no")});return}
+      S.items=S.items.filter(function(x){return String(x.id)!==b.dataset.rm});save();render()}});
+  }
+
+  function icsFecha(d,h){var p=d.split("-"),x=new Date(Date.UTC(+p[0],+p[1]-1,+p[2],h)),z=function(n){return String(n).padStart(2,"0")};
+    return x.getUTCFullYear()+z(x.getUTCMonth()+1)+z(x.getUTCDate())+"T"+z(x.getUTCHours())+z(x.getUTCMinutes())+"00"}
+  function icsMes(){
+    var m=mo(),g=IT().filter(function(x){return x.p===S.me&&x.d.slice(0,7)===m}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.a-b.a});
+    if(!g.length){$("icsmsg").textContent="No tienes guardias en este mes.";return}
+    var now=new Date(),z=function(n){return String(n).padStart(2,"0")},st=now.getUTCFullYear()+z(now.getUTCMonth()+1)+z(now.getUTCDate())+"T"+z(now.getUTCHours())+z(now.getUTCMinutes())+z(now.getUTCSeconds())+"Z";
+    var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Guardias EIR R1//ES","CALSCALE:GREGORIAN","X-WR-TIMEZONE:Europe/Madrid"];
+    g.forEach(function(x){
+      L.push("BEGIN:VEVENT","UID:"+x.d+"-"+x.l+"-"+x.a+"-"+S.me.replace(/\s+/g,"")+"@guardias-r1","DTSTAMP:"+st,
+        "DTSTART;TZID=Europe/Madrid:"+icsFecha(x.d,x.a),"DTEND;TZID=Europe/Madrid:"+icsFecha(x.d,x.b),
+        "SUMMARY:Guardia "+PL[x.l]+" ("+x.h+" h)","DESCRIPTION:Guardia de "+S.me+": "+PL[x.l]+", "+x.h+" h.",
+        "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:Guardia mañana","TRIGGER:-P1D","END:VALARM","END:VEVENT");
+    });
+    L.push("END:VCALENDAR");
+    var blob=new Blob([L.join("\r\n")],{type:"text/calendar;charset=utf-8"}),a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download="guardias-"+S.me.replace(/\s+/g,"-")+"-"+m+".ics";document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+    $("icsmsg").textContent=g.length+" guardia(s) descargadas. Ábrelas para añadirlas a tu calendario.";
+  }
+  $("ics").onclick=icsMes;
+  function key(n,m){return n+"|"+m}
+  function stats(n,m){var g=IT().filter(function(x){return x.p===n&&x.d.slice(0,7)===m}),o={tot:0,urg:0,nh:0,nr:0};
+    g.forEach(function(x){o.tot+=x.h;if(x.l==="HRV"){o.urg+=x.h;o.nh++}else o.nr++});return o}
+  function miss(o,mn){var f=[];if(o.tot<mn)f.push("faltan "+(mn-o.tot)+" h");if(o.nh<2)f.push((2-o.nh)+" guardia(s) en HRV");if(o.urg<14)f.push((14-o.urg)+" h de urgencias");if(o.nr<1)f.push("1 guardia rural");return f}
+  function summary(m){
+    var o=stats(S.me,m),k=S.min[key(S.me,m)]||{v:35,w:""},f=miss(o,k.v);
+    $("mn").value=k.v;$("mw").value=k.w;
+    function r(a,b){return'<div class="row"><span>'+a+'</span><span>'+b+'</span></div>'}
+    var est=f.length?'<span class="wr">'+(S.round===2?"Falta: ":"Aún puedes completarlo en la siguiente ronda: ")+f.join(", ")+'</span>':'<span class="ok">✓ Cumples los mínimos</span>';
+    function q(a,b,ok){return'<div class="row"><span>'+a+'</span><span class="'+(ok?'ok':'wr')+'">'+(ok?'✓ ':'')+b+'</span></div>'}
+    $("sum").innerHTML=q("Horas totales (mínimo "+k.v+" h)",o.tot+" de "+k.v+" h",o.tot>=k.v)+
+      q("Urgencias HRV (mín. 2 guardias y 14 h)",o.nh+" de 2 guardias · "+o.urg+" de 14 h",o.nh>=2&&o.urg>=14)+
+      q("Rural (mín. 1 guardia)",o.nr+" de 1 guardia"+(o.nr?" · "+(o.tot-o.urg)+" h":""),o.nr>=1)+
+      (S.round===1&&o.tot>35?'<div class="row"><span class="wr">⚠ Te estás pasando de 35 h</span><span class="wr">tope 40 h</span></div>':"")+
+      '<div class="row"><span>Estado</span>'+est+'</div>'+(k.v<35?'<p class="wr">Mínimo reducido: pendiente de visto bueno de la Unidad Docente.</p>':"");
+  }
+  function setMin(){var m=mo(),k={v:Math.max(0,+$("mn").value||0),w:$("mw").value.trim()};S.min[key(S.me,m)]=k;save();summary(m)}
+  $("mn").onchange=setMin;$("mw").onchange=setMin;
+  function todos(m){
+    var cur=seq(m)[S.ti],h='<tr><th>Persona</th><th>Total</th><th>HRV</th><th>Alfajarín</th><th>Villamayor</th><th>Zuera</th><th>Días</th></tr>';
+    function c(v){return'<td>'+(v||"–")+'</td>'}
+    order(m).forEach(function(n){
+      var o={HRV:0,ALF:0,VIL:0,ZUE:0},tot=0,ds=[];
+      IT().forEach(function(x){if(x.p===n&&x.d.slice(0,7)===m){o[x.l]+=x.h;tot+=x.h;ds.push(x)}});
+      ds.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.a-b.a});
+      h+='<tr'+(n===cur?' style="font-weight:700"':'')+'><td>'+n+'</td><td class="'+(tot>=35?'ok':'')+'">'+tot+'</td>'+c(o.HRV)+c(o.ALF)+c(o.VIL)+c(o.ZUE)+'<td style="white-space:normal;min-width:130px">'+(ds.length?ds.map(function(x){return +x.d.slice(8)+' '+LT[x.l]+' '+x.h+'h'}).join(', '):'–')+'</td></tr>';
+    });
+    $("all").innerHTML=h;
+  }
+  function cierre(){
+    var m=mo(),h="";
+    R1.forEach(function(n){var k=S.min[key(n,m)]||{v:35,w:""},o=stats(n,m),f=miss(o,k.v);
+      h+='<div class="row"><span>'+n+'</span><span class="'+(f.length?'no':'ok')+'">'+(f.length?"No llega: "+f.join(", ")+(k.w?" · ajuste anotado: "+k.w+" (pendiente de la UD)":""):"✓ Cumple")+'</span></div>'});
+    $("cierre").innerHTML=h;
+  }
+  render();refresh();setInterval(refresh,30000);
+})();
+</script>
+</body>
+</html>
