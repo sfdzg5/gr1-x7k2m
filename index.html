@@ -171,12 +171,17 @@ select{color-scheme:light dark}
       REMOTE[k].el.forEach(function(e){S.items.push({id:e.id,p:e.persona,c:"R1",r:+e.ronda||1,d:e.fecha,l:LCODE[e.lugar]||"HRV",a:e.ini,b:e.fin,h:e.horas})});
     })}
   function net(x,c){var e=$("net");if(e){e.textContent=x;e.className=c||"wr"}}
-  function refresh(){var m=$("mes").value;if(!m)return Promise.resolve();
-    return fetch(API+"?mes="+m).then(function(r){return r.json()}).then(function(j){
+  var KEY="";try{KEY=localStorage.getItem("gk")||""}catch(e){}
+  function pedir(m){var k=prompt(m||"Introduce la clave de residentes:");if(k&&k.trim()){KEY=k.trim();try{localStorage.setItem("gk",KEY)}catch(e){}return true}return false}
+  function malClave(){KEY="";try{localStorage.removeItem("gk")}catch(e){}}
+  function refresh(rep){var m=$("mes").value;if(!m)return Promise.resolve();
+    if(!KEY&&!pedir()){ONLINE=false;net("Sin clave: modo local (lo que elijas no se comparte).","wr");return Promise.resolve()}
+    return fetch(API+"?mes="+m+"&clave="+encodeURIComponent(KEY)).then(function(r){return r.json()}).then(function(j){
+      if(j.error==="clave"){malClave();if(!rep&&pedir("Clave incorrecta. Introdúcela de nuevo:"))return refresh(1);throw 0}
       if(!j.ok)throw 0;REMOTE[m]={cal:j.calendario,el:j.elecciones};ONLINE=true;rebuild();
       net("Conectado con el Drive de prueba · "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}),"ok");render()
     }).catch(function(){ONLINE=false;net("Sin conexión con el Drive: modo local (lo que elijas no se comparte).","wr")})}
-  function send(o){return fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)}).then(function(r){return r.json()})}
+  function send(o){o.clave=KEY;return fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)}).then(function(r){return r.json()}).then(function(j){if(j&&j.error==="clave"){malClave();j.error="Clave incorrecta: recarga la página e introdúcela de nuevo."}return j})}
   var ORD0=R1.slice(),FEST=["2026-12-08","2026-12-25","2027-01-01","2027-01-06","2027-01-29","2027-03-05","2027-03-25","2027-03-26","2027-04-23","2027-08-16","2027-10-12","2027-11-01","2027-12-06","2027-12-08","2027-12-24","2027-12-31"],S={items:[],me:R1[0],round:1,ti:0,min:{},pay:{v:2,base:1199.52,nf:15.71,fe:16.83,irpf:0}},sel="2027-01-01";
   var KEY="elegir-guardias-r1";
   try{var s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.items){S.items=s.items;S.me=s.me||S.me;S.round=Math.min(2,s.round||1);S.ti=s.ti||0;S.min=s.min||{};if(s.pay&&s.pay.v===2)S.pay=s.pay}}catch(e){}
@@ -345,7 +350,7 @@ select{color-scheme:light dark}
       h+='<div class="row"><span>'+n+'</span><span class="'+(f.length?'no':'ok')+'">'+(f.length?"No llega: "+f.join(", ")+(k.w?" · ajuste anotado: "+k.w+" (pendiente de la UD)":""):"✓ Cumple")+'</span></div>'});
     $("cierre").innerHTML=h;
   }
-  render();refresh();setInterval(refresh,30000);
+  render();refresh();setInterval(function(){if(KEY)refresh()},30000);
 })();
 </script>
 </body>
