@@ -269,7 +269,7 @@ select{color-scheme:light dark}
     Object.keys(PL).forEach(function(l){
       var o=occ(d,l),ts=turnos(d,l),why1="",wr=0;
       h+='<div class="pl"><b>'+PL[l]+'</b><div class="occ">'+(o.length?o.map(function(x){return x.c+" "+x.p+" ("+x.h+" h)"}).join(" · "):"Sin nadie apuntado")+'</div>'+
-        (function(){var mm=MIRS.filter(function(x){return x.d===d&&x.l===l});return mm.length?'<div class="occ">MIR de guardia: '+mm.map(function(x){return x.p+(x.n?" "+x.n:"")+(x.h?" ("+x.h+" h)":"")}).join(" · ")+' (no excluyen tu elección)</div>':""})()+'<div class="acts">';
+        (function(){var mm=MIRS.filter(function(x){return x.d===d&&x.l===l});return mm.length?'<div class="occ">MIR de guardia: '+mm.map(function(x){return x.p+(x.n?" "+x.n:"")+(x.h?" ("+x.h+" h)":"")}).join(" · ")+'</div>':""})()+'<div class="acts">';
       S.items.filter(function(x){return x.p===S.me&&x.d===d&&x.l===l}).forEach(function(x){
         h+='<button class="b rm" data-rm="'+x.id+'">Quitar mi guardia ('+x.h+' h)</button>'});
       ts.forEach(function(t,i){var w=why(d,l,t);if(w&&!why1)why1=w;
