@@ -99,7 +99,7 @@ select{color-scheme:light dark}
     <div class="grid">
       <label class="f">Soy<select id="me"></select></label>
       <label class="f">Mes<input id="mes" type="month" value="2027-01"></label>
-      <label class="f">Ronda<select id="rd"><option value="1">1ª: festivo 14 h y hasta 35 h</option><option value="2">2ª: festivos y turnos extra (inversa)</option></select></label>
+      <label class="f">Ronda<select id="rd"><option value="1">1ª: 1 festivo de 14 h (domingo o festivo), sábados y hasta 35 h</option><option value="2">2ª: festivos y turnos extra (inversa)</option></select></label>
     </div>
     <div id="turn"></div>
   </div>
@@ -172,10 +172,11 @@ select{color-scheme:light dark}
   function IT(){return CALR1.concat(S.items)}
   var API="https://script.google.com/macros/s/AKfycbz1XM8YVIzOsMXJ1z_QMpCsQ4oWKauZ79YCMyQ1jCOtGUozUV_5TCdz36ygRsRNLz9p/exec",REMOTE={},ONLINE=false,R2BASE=R2.slice();
   var LNAME={HRV:"HRV",ALF:"Alfajarín",VIL:"Villamayor",ZUE:"Zuera"},LCODE={"HRV":"HRV","Alfajarín":"ALF","Villamayor":"VIL","Zuera":"ZUE"};
+  var MIRS=[];
   function rebuild(){var ms=Object.keys(REMOTE);
-    R2=R2BASE.filter(function(x){return ms.indexOf(x.d.slice(0,7))<0});CALR1=[];S.items=[];
+    R2=R2BASE.filter(function(x){return ms.indexOf(x.d.slice(0,7))<0});CALR1=[];MIRS=[];S.items=[];
     ms.forEach(function(k){
-      REMOTE[k].cal.forEach(function(g){var o={id:"cal"+Math.random(),d:g.fecha,l:LCODE[g.lugar]||"HRV",p:g.persona,h:g.horas||0,c:g.curso,r:0,a:g.ini==null?0:g.ini,b:g.fin==null?99:g.fin};if(g.curso==="R2")R2.push(o);else CALR1.push(o)});
+      REMOTE[k].cal.forEach(function(g){if(g.curso==="MIR"){MIRS.push({d:g.fecha,l:LCODE[g.lugar]||"HRV",p:g.persona,n:g.nivel||"",h:g.horas||0});return}var o={id:"cal"+Math.random(),d:g.fecha,l:LCODE[g.lugar]||"HRV",p:g.persona,h:g.horas||0,c:g.curso,r:0,a:g.ini==null?0:g.ini,b:g.fin==null?99:g.fin};if(g.curso==="R2")R2.push(o);else CALR1.push(o)});
       REMOTE[k].el.forEach(function(e){S.items.push({id:e.id,p:e.persona,c:"R1",r:+e.ronda||1,d:e.fecha,l:LCODE[e.lugar]||"HRV",a:e.ini,b:e.fin,h:e.horas})});
     })}
   function net(x,c){var e=$("net");if(e){e.textContent=x;e.className=c||"wr"}}
@@ -230,7 +231,7 @@ select{color-scheme:light dark}
     var w=base(d,l,t,ign);if(w)return w;
     if(S.round===1){
       var m=d.slice(0,7);
-      if(t.h===14&&IT().some(function(x){return x.p===S.me&&x.r===1&&x.h===14&&x.d.slice(0,7)===m&&x.id!==ign}))return"En la 1ª ronda solo puedes elegir 1 festivo de 14 h.";
+      if(t.h===14&&isFE(d)&&IT().some(function(x){return x.p===S.me&&x.r===1&&x.h===14&&isFE(x.d)&&x.d.slice(0,7)===m&&x.id!==ign}))return"En la 1ª ronda solo puedes elegir 1 festivo de 14 h (los sábados no cuentan como festivo).";
       if(myTot(ign)+t.h>40)return"Pasarías de 40 h en la 1ª ronda.";
     }
     return"";
@@ -270,7 +271,8 @@ select{color-scheme:light dark}
       (isFE(d)?'<p class="occ">Día festivo: se hacen guardias de fin de semana.</p>':'');
     Object.keys(PL).forEach(function(l){
       var o=occ(d,l),ts=turnos(d,l),why1="",wr=0;
-      h+='<div class="pl"><b>'+PL[l]+'</b><div class="occ">'+(o.length?o.map(function(x){return x.c+" "+x.p+" ("+x.h+" h)"}).join(" · "):"Sin nadie apuntado")+'</div><div class="acts">';
+      h+='<div class="pl"><b>'+PL[l]+'</b><div class="occ">'+(o.length?o.map(function(x){return x.c+" "+x.p+" ("+x.h+" h)"}).join(" · "):"Sin nadie apuntado")+'</div>'+
+        (function(){var mm=MIRS.filter(function(x){return x.d===d&&x.l===l});return mm.length?'<div class="occ">MIR de guardia: '+mm.map(function(x){return x.p+(x.n?" "+x.n:"")+(x.h?" ("+x.h+" h)":"")}).join(" · ")+' (no excluyen tu elección)</div>':""})()+'<div class="acts">';
       S.items.filter(function(x){return x.p===S.me&&x.d===d&&x.l===l}).forEach(function(x){
         h+='<button class="b rm" data-rm="'+x.id+'">Quitar mi guardia ('+x.h+' h)</button>'});
       ts.forEach(function(t,i){var w=why(d,l,t);if(w&&!why1)why1=w;
