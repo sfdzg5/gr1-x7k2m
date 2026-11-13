@@ -121,9 +121,6 @@ select{color-scheme:light dark}
       <label class="f">Motivo si es menor (vacaciones…)<input id="mw" type="text"></label>
     </div>
     <div id="sum" style="margin-top:8px"></div>
-    <button class="bt" id="ics" type="button" style="margin-top:10px">📅 Añadir mis guardias a mi calendario</button>
-    <p class="wr" id="icsmsg" style="color:var(--mute)"></p>
-    <p class="sub" style="margin:6px 0 0;padding:0">⚠ Se añaden las guardias de este mes tal como están ahora. Si luego las cambias, las quitas o eliges más, el calendario no se actualiza solo: borra las antiguas de tu calendario y vuelve a descargarlas.</p>
   </div>
 
   <div class="card">
@@ -290,26 +287,6 @@ select{color-scheme:light dark}
       S.items=S.items.filter(function(x){return String(x.id)!==b.dataset.rm});save();render()}});
   }
 
-  function icsFecha(d,h){var p=d.split("-"),x=new Date(Date.UTC(+p[0],+p[1]-1,+p[2],h)),z=function(n){return String(n).padStart(2,"0")};
-    return x.getUTCFullYear()+z(x.getUTCMonth()+1)+z(x.getUTCDate())+"T"+z(x.getUTCHours())+z(x.getUTCMinutes())+"00"}
-  function icsMes(){
-    var m=mo(),g=IT().filter(function(x){return x.p===S.me&&x.d.slice(0,7)===m}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.a-b.a});
-    if(!g.length){$("icsmsg").textContent="No tienes guardias en este mes.";return}
-    var now=new Date(),z=function(n){return String(n).padStart(2,"0")},st=now.getUTCFullYear()+z(now.getUTCMonth()+1)+z(now.getUTCDate())+"T"+z(now.getUTCHours())+z(now.getUTCMinutes())+z(now.getUTCSeconds())+"Z";
-    var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Guardias EIR R1//ES","CALSCALE:GREGORIAN","X-WR-TIMEZONE:Europe/Madrid"];
-    g.forEach(function(x){
-      L.push("BEGIN:VEVENT","UID:"+x.d+"-"+x.l+"-"+x.a+"-"+S.me.replace(/\s+/g,"")+"@guardias-r1","DTSTAMP:"+st,
-        "DTSTART;TZID=Europe/Madrid:"+icsFecha(x.d,x.a),"DTEND;TZID=Europe/Madrid:"+icsFecha(x.d,x.b),
-        "SUMMARY:"+S.me+" · Guardia "+PL[x.l]+" ("+x.h+" h)","DESCRIPTION:Guardia de "+S.me+": "+PL[x.l]+", "+x.h+" h.",
-        "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:Guardia mañana","TRIGGER:-P1D","END:VALARM","END:VEVENT");
-    });
-    L.push("END:VCALENDAR");
-    var blob=new Blob([L.join("\r\n")],{type:"text/calendar;charset=utf-8"}),a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);a.download="guardias-"+S.me.replace(/\s+/g,"-")+"-"+m+".ics";document.body.appendChild(a);a.click();
-    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
-    $("icsmsg").textContent=g.length+" guardia(s) descargadas. Ábrelas para añadirlas a tu calendario.";
-  }
-  $("ics").onclick=icsMes;
   var eur=new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"});
   function pay(m){
     var P={base:1199.52,nf:15.71,fe:16.83,irpf:S.pay.irpf||0},f={pb:"base",pl:"nf",pf:"fe",pi:"irpf"};
