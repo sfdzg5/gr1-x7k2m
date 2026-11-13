@@ -237,7 +237,7 @@ select{color-scheme:light dark}
     if(S.round===1){
       var m=d.slice(0,7);
       if(t.h===14&&isFE(d)&&IT().some(function(x){return x.p===S.me&&x.r===1&&x.h===14&&isFE(x.d)&&x.d.slice(0,7)===m&&x.id!==ign}))return"En la 1ª ronda solo puedes elegir 1 festivo de 14 h (los sábados no cuentan como festivo).";
-      if(myTot(ign)+t.h>40)return"Pasarías de 40 h en la 1ª ronda.";
+      if(myTot(ign)+t.h>35)return"En la 1ª ronda el tope es de 35 h: con esa guardia llegarías a "+(myTot(ign)+t.h)+" h.";
     }
     return"";
   }
