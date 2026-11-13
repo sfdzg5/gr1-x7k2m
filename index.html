@@ -75,6 +75,29 @@ select{color-scheme:light dark}
   .t{font-size:.58rem;padding:0 2px}
   .b{padding:7px 9px;font-size:.82rem}
 }
+
+:root{--c-hrv:#0E7C86;--c-alf:#38761D;--c-vil:#8A2BE2;--c-zue:#D93025}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c-hrv:#5CCBD6;--c-alf:#7BC96F;--c-vil:#C58BFF;--c-zue:#FF8A80}}
+:root[data-theme="dark"]{--c-hrv:#5CCBD6;--c-alf:#7BC96F;--c-vil:#C58BFF;--c-zue:#FF8A80}
+.hl{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.74rem;color:var(--mute);margin:0 0 6px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.pp{border-top:1px solid var(--line);padding:11px 0 10px}
+.pp:first-of-type{border-top:0}
+.pp .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pp .nm{font-weight:700;font-size:.95rem}
+.pp.cur{background:var(--we);border-radius:10px;padding-left:8px;padding-right:8px;border-top-color:transparent}
+.pp .tt{font-size:.8rem;font-variant-numeric:tabular-nums;color:var(--mute)}
+.pp .tt b{font-size:1rem;color:var(--ink)}
+.pp .tt.ok b{color:var(--ok)}.pp .tt.hi b{color:var(--warn)}
+.bar{position:relative;height:12px;border-radius:999px;background:var(--line);overflow:hidden;display:flex;margin:7px 0 6px}
+.bar i{display:block;height:100%}
+.bar u{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.55}
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 5px}
+.pill{display:inline-flex;align-items:center;font-size:.74rem;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-variant-numeric:tabular-nums}
+.dch{display:flex;flex-wrap:wrap;gap:4px}
+.dc{font-size:.74rem;border-left:4px solid var(--cc);background:var(--we);border-radius:6px;padding:2px 8px;font-variant-numeric:tabular-nums}
+.pp.cur .dc{background:var(--card)}
+.pp .st{font-size:.76rem;margin:5px 0 0}
 </style>
 </head>
 <body>
@@ -136,8 +159,8 @@ select{color-scheme:light dark}
   </div>
 
   <div class="card">
-    <h2>Lo que lleva cada uno (horas)</h2>
-    <div class="scroll"><table id="all"></table></div>
+    <h2>Horas y localización</h2>
+    <div id="all"></div>
   </div>
 
   <div class="card">
@@ -289,7 +312,7 @@ select{color-scheme:light dark}
 
   var eur=new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"});
   function pay(m){
-    var P={base:1199.52,nf:15.71,fe:16.83,irpf:S.pay.irpf||0},f={pb:"base",pl:"nf",pf:"fe",pi:"irpf"};
+    var P={base:1199.52,nf:16.84,fe:18.03,irpf:S.pay.irpf||0},f={pb:"base",pl:"nf",pf:"fe",pi:"irpf"};
     Object.keys(f).forEach(function(i){if(document.activeElement!==$(i))$(i).value=P[f[i]]||""});
     var H={nf:0,fe:0};
     IT().forEach(function(x){if(x.p===S.me&&x.c==="R1"&&x.d.slice(0,7)===m)H[isFE(x.d)?"fe":"nf"]+=x.h});
@@ -301,7 +324,10 @@ select{color-scheme:light dark}
       (sin?'<p class="wr">Escribe los €/hora para ver el importe.</p>':
         r("Guardias del mes",eur.format(H.nf*P.nf+H.fe*P.fe))+(P.base?r("Sueldo base",eur.format(P.base)):"")+
         r("<b>Total bruto estimado</b>","<b>"+eur.format(br)+"</b>")+
-        (P.irpf?r("IRPF ("+P.irpf.toLocaleString("es-ES")+" %)","− "+eur.format(br*P.irpf/100))+r("<b>Total tras IRPF</b>","<b>"+eur.format(br*(1-P.irpf/100))+"</b>"):""));
+        r("Cont. comunes (4,70 %)","− "+eur.format(br*0.047))+r("Desempleo + F. Prof. (1,70 %)","− "+eur.format(br*0.017))+
+        (P.irpf?r("IRPF ("+P.irpf.toLocaleString("es-ES")+" %)","− "+eur.format(br*P.irpf/100)):"")+
+        r("<b>Neto estimado</b>","<b>"+eur.format(br*(1-(4.7+1.7+P.irpf)/100))+"</b>")+
+        '<p class="sub" style="margin:6px 0 0;padding:0">Cotizaciones aproximadas sobre el bruto del mes; en la nómina la base incluye la parte proporcional de las pagas extra, así que puede variar algo.</p>');
   }
   [["pi","irpf"]].forEach(function(a){
     $(a[0]).oninput=function(){S.pay[a[1]]=Math.min(60,Math.max(0,+$(a[0]).value||0));save();pay(mo())}});
@@ -324,15 +350,22 @@ select{color-scheme:light dark}
   function setMin(){var m=mo(),k={v:Math.max(0,+$("mn").value||0),w:$("mw").value.trim()};S.min[key(S.me,m)]=k;save();summary(m)}
   $("mn").onchange=setMin;$("mw").onchange=setMin;
   function todos(m){
-    var cur=seq(m)[S.ti],h='<tr><th>Persona</th><th>Total</th><th>HRV</th><th>Alfajarín</th><th>Villamayor</th><th>Zuera</th><th>Días</th></tr>';
-    function c(v){return'<td>'+(v||"–")+'</td>'}
+    var cur=seq(m)[S.ti],CL={HRV:"hrv",ALF:"alf",VIL:"vil",ZUE:"zue"},mo2=+m.slice(5);
+    var out='<div class="hl"><span><i class="dot" style="background:var(--c-hrv)"></i>HRV</span><span><i class="dot" style="background:var(--c-alf)"></i>Alfajarín</span><span><i class="dot" style="background:var(--c-vil)"></i>Villamayor</span><span><i class="dot" style="background:var(--c-zue)"></i>Zuera</span><span>★ festivo (domingo o festivo)</span><span>| marca de 35 h</span></div>';
     order(m).forEach(function(n){
       var o={HRV:0,ALF:0,VIL:0,ZUE:0},tot=0,ds=[];
       IT().forEach(function(x){if(x.p===n&&x.d.slice(0,7)===m){o[x.l]+=x.h;tot+=x.h;ds.push(x)}});
       ds.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.a-b.a});
-      h+='<tr'+(n===cur?' style="font-weight:700"':'')+'><td>'+n+'</td><td class="'+(tot>=35?'ok':'')+'">'+tot+'</td>'+c(o.HRV)+c(o.ALF)+c(o.VIL)+c(o.ZUE)+'<td style="white-space:normal;min-width:130px">'+(ds.length?ds.map(function(x){return +x.d.slice(8)+' '+LT[x.l]+' '+x.h+'h'}).join(', '):'–')+'</td></tr>';
+      var esc=Math.max(40,tot),k=(S.min[key(n,m)]||{v:35}).v,f=miss(stats(n,m),k);
+      var seg=Object.keys(o).filter(function(l){return o[l]>0}).map(function(l){return'<i style="width:'+(o[l]/esc*100)+'%;background:var(--c-'+CL[l]+')" title="'+PL[l]+': '+o[l]+' h"></i>'}).join("");
+      var pills=Object.keys(o).filter(function(l){return o[l]>0}).map(function(l){return'<span class="pill"><i class="dot" style="background:var(--c-'+CL[l]+')"></i>'+PL[l].replace(" (urgencias)","")+' · '+o[l]+' h</span>'}).join("");
+      var days=ds.map(function(x){return'<span class="dc" style="--cc:var(--c-'+CL[x.l]+')">'+(isFE(x.d)?"★ ":"")+(+x.d.slice(8))+' '+mn[mo2-1].slice(0,3)+' · '+PL[x.l].replace(" (urgencias)","")+' · '+x.h+' h</span>'}).join("");
+      out+='<div class="pp'+(n===cur?' cur':'')+'"><div class="top"><span class="nm">'+n+(n===cur?' · su turno':'')+'</span><span class="tt '+(tot>=k?(tot>35?'hi':'ok'):'')+'"><b>'+tot+'</b> h</span></div>'+
+        '<div class="bar">'+seg+'<u style="left:'+(35/esc*100)+'%"></u></div>'+
+        (tot?'<div class="pills">'+pills+'</div><div class="dch">'+days+'</div>':'<div class="occ">Sin guardias todavía</div>')+
+        (tot?'<div class="st '+(f.length?'wr':'ok')+'">'+(f.length?'Falta: '+f.join(', '):'✓ Cumple los mínimos')+'</div>':'')+'</div>';
     });
-    $("all").innerHTML=h;
+    $("all").innerHTML=out;
   }
   function cierre(){
     var m=mo(),h="";
