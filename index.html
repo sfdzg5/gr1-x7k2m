@@ -286,9 +286,11 @@ select{color-scheme:light dark}
     $("day").innerHTML=h;
     [].forEach.call($("day").querySelectorAll("[data-l]"),function(b){b.onclick=function(){
       var l=b.dataset.l,t=turnos(d,l)[+b.dataset.i];if(why(d,l,t))return;
+      if(!ONLINE){net("Sin conexión con el Drive: ahora no se puede elegir. Recarga la página.","no");return}
       if(ONLINE){b.disabled=true;send({accion:"anadir",persona:S.me,fecha:d,lugar:LNAME[l],ini:t.a,fin:t.b,ronda:S.round}).then(function(j){return refresh().then(function(){if(!j.ok)net(j.error||"No se pudo guardar.","no");else if(j.avisos&&j.avisos.length)net("Guardada, pero: "+j.avisos.join(" · "),j.avisos.join(" ").indexOf("NO HAY HUECO")>=0?"no":"wr")})}).catch(function(){net("No se pudo guardar. Inténtalo de nuevo.","no")});return}
       S.items.push({id:Date.now()+Math.random(),p:S.me,c:"R1",r:S.round,d:d,l:l,a:t.a,b:t.b,h:t.h});save();render()}});
     [].forEach.call($("day").querySelectorAll("[data-rm]"),function(b){b.onclick=function(){
+      if(!ONLINE){net("Sin conexión con el Drive: ahora no se puede quitar. Recarga la página.","no");return}
       if(ONLINE){b.disabled=true;send({accion:"quitar",persona:S.me,id:b.dataset.rm}).then(function(j){return refresh().then(function(){if(!j.ok)net(j.error||"No se pudo quitar.","no");else if(j.avisos&&j.avisos.length)net("Quitada, pero: "+j.avisos.join(" · "),"wr")})}).catch(function(){net("No se pudo quitar. Inténtalo de nuevo.","no")});return}
       S.items=S.items.filter(function(x){return String(x.id)!==b.dataset.rm});save();render()}});
   }
