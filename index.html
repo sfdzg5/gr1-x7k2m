@@ -320,12 +320,12 @@ select{color-scheme:light dark}
   function miss(o,mn){var f=[];if(o.tot<mn)f.push("faltan "+(mn-o.tot)+" h");if(o.nh<2)f.push((2-o.nh)+" guardia(s) en HRV");if(o.urg<14)f.push((14-o.urg)+" h de urgencias");if(o.nr<1)f.push("1 guardia rural");return f}
   function todos(m){
     var cur=null,CL={HRV:"hrv",ALF:"alf",VIL:"vil",ZUE:"zue"},mo2=+m.slice(5);
-    var out='<div class="hl"><span><i class="dot" style="background:var(--c-hrv)"></i>HRV</span><span><i class="dot" style="background:var(--c-alf)"></i>Alfajarín</span><span><i class="dot" style="background:var(--c-vil)"></i>Villamayor</span><span><i class="dot" style="background:var(--c-zue)"></i>Zuera</span><span>★ festivo (domingo o festivo)</span><span>| marca de 35 h</span></div>';
+    var out='<div class="hl"><span><i class="dot" style="background:var(--c-hrv)"></i>HRV</span><span><i class="dot" style="background:var(--c-alf)"></i>Alfajarín</span><span><i class="dot" style="background:var(--c-vil)"></i>Villamayor</span><span><i class="dot" style="background:var(--c-zue)"></i>Zuera</span><span>★ festivo (domingo o festivo)</span><span>| tope de 35 h en la 1ª ronda</span></div>';
     order(m).forEach(function(n){
       var o={HRV:0,ALF:0,VIL:0,ZUE:0},tot=0,ds=[];
       IT().forEach(function(x){if(x.p===n&&x.d.slice(0,7)===m){o[x.l]+=x.h;tot+=x.h;ds.push(x)}});
       ds.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.a-b.a});
-      var esc=Math.max(40,tot),k=(S.min[key(n,m)]||{v:35}).v,f=miss(stats(n,m),k);
+      var esc=Math.max(35,tot),k=(S.min[key(n,m)]||{v:35}).v,f=miss(stats(n,m),k);
       var seg=Object.keys(o).filter(function(l){return o[l]>0}).map(function(l){return'<i style="width:'+(o[l]/esc*100)+'%;background:var(--c-'+CL[l]+')" title="'+PL[l]+': '+o[l]+' h"></i>'}).join("");
       var pills=Object.keys(o).filter(function(l){return o[l]>0}).map(function(l){return'<span class="pill"><i class="dot" style="background:var(--c-'+CL[l]+')"></i>'+PL[l].replace(" (urgencias)","")+' · '+o[l]+' h</span>'}).join("");
       var days=ds.map(function(x){return'<span class="dc" style="--cc:var(--c-'+CL[x.l]+')">'+(isFE(x.d)?"★ ":"")+(+x.d.slice(8))+' '+mn[mo2-1].slice(0,3)+' · '+PL[x.l].replace(" (urgencias)","")+' · '+x.h+' h</span>'}).join("");
