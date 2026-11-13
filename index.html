@@ -235,7 +235,7 @@ select{color-scheme:light dark}
     if(mine)return"Ya tienes otra guardia a esa hora ("+PL[mine.l]+").";
     var o=occ(d,l,ign);
     if(l==="HRV"){var r=IT().filter(function(x){return x.d===d&&x.l==="HRV"&&x.id!==ign&&ov(t,x)})[0];return r?"Ya hay un R1 en el HRV a esa hora ("+r.p+").":""}
-    if(l==="ZUE")return o.length>=2?"Zuera ya tiene dos residentes ese día.":"";
+    if(l==="ZUE"){var dw=pd(d).getDay(),ent=dw>=1&&dw<=5&&!isFE(d);if(ent&&o.length)return"En Zuera, entre semana (no festivo), no podéis coincidir ("+o[0].p+" ya está).";return o.length>=2?"Zuera ya tiene dos residentes ese día.":""}
     return o.length?"Ya hay un EIR ese día ("+o[0].c+" "+o[0].p+").":"";
   }
   function why(d,l,t,ign){
