@@ -154,11 +154,6 @@ select{color-scheme:light dark}
     <div id="all"></div>
   </div>
 
-  <div class="card">
-    <h2>Cierre de mes</h2>
-    <button class="bt" id="cl" type="button">Revisar a todos los R1</button>
-    <div id="cierre"></div>
-  </div>
   </div>
 </main>
 
@@ -219,7 +214,6 @@ select{color-scheme:light dark}
   $("mes").onchange=function(){sel=$("mes").value+"-01";S.ti=0;render();refresh()};
   $("rd").value=S.round;
   $("rd").onchange=function(){S.round=+$("rd").value;save();render()};
-  $("cl").onclick=function(){cierre()};
 
   function isFE(d){return pd(d).getDay()===0||FEST.indexOf(d)>=0}
   function isWE(d){return pd(d).getDay()===6||isFE(d)}
@@ -341,12 +335,6 @@ select{color-scheme:light dark}
         (tot?'<div class="st '+(f.length?'wr':'ok')+'">'+(f.length?'Falta: '+f.join(', '):'✓ Cumple los mínimos')+'</div>':'')+'</div>';
     });
     $("all").innerHTML=out;
-  }
-  function cierre(){
-    var m=mo(),h="";
-    R1.forEach(function(n){var k=S.min[key(n,m)]||{v:35,w:""},o=stats(n,m),f=miss(o,k.v);
-      h+='<div class="row"><span>'+n+'</span><span class="'+(f.length?'no':'ok')+'">'+(f.length?"No llega: "+f.join(", ")+(k.w?" · ajuste anotado: "+k.w+" (pendiente de la UD)":""):"✓ Cumple")+'</span></div>'});
-    $("cierre").innerHTML=h;
   }
   render();refresh();setInterval(function(){if(CK)refresh()},30000);
 })();
