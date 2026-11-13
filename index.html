@@ -218,7 +218,7 @@ select{color-scheme:light dark}
   $("me").onchange=function(){S.me=$("me").value;save();render()};
   $("mes").onchange=function(){sel=$("mes").value+"-01";S.ti=0;render();refresh()};
   $("rd").value=S.round;
-  $("rd").onchange=function(){S.round=+$("rd").value;S.ti=0;S.me=seq(mo())[0];$("me").value=S.me;save();render()};
+  $("rd").onchange=function(){S.round=+$("rd").value;save();render()};
   $("cl").onclick=function(){cierre()};
 
   function isFE(d){return pd(d).getDay()===0||FEST.indexOf(d)>=0}
@@ -255,11 +255,9 @@ select{color-scheme:light dark}
   function order(m){var i=(((+m.slice(0,4)-2026)*12+(+m.slice(5))-7)%8+8)%8;return ORD0.slice(i).concat(ORD0.slice(0,i))}
   function seq(m){var o=order(m);return S.round===1?o:o.slice().reverse()}
   function turn(m){
-    var q=seq(m),cur=q[S.ti];
-    $("turn").innerHTML='<div class="chips">'+q.map(function(n,i){return'<span class="chip'+(i===S.ti?' cur':'')+(i<S.ti?' done':'')+'">'+(i+1)+'. '+n+'</span>'}).join("")+'</div>'+
-      '<b>'+(cur?'Turno de '+cur:'Ronda terminada')+'</b> <button class="bt" id="nx" type="button">Siguiente turno</button>'+
-      (cur&&cur!==S.me?'<p class="wr">Ahora le toca a '+cur+'; estás viendo la elección como '+S.me+'.</p>':'');
-    $("nx").onclick=function(){S.ti=Math.min(8,S.ti+1);if(q[S.ti])S.me=q[S.ti];$("me").value=S.me;save();render()};
+    var q=seq(m);
+    $("turn").innerHTML='<b>Orden de elección ('+(S.round===1?"1ª ronda":"2ª ronda, orden inverso")+')</b><div class="chips">'+q.map(function(n,i){return'<span class="chip'+(n===S.me?' cur':'')+'">'+(i+1)+'. '+n+'</span>'}).join("")+'</div>'+
+      '<p class="sub" style="margin:4px 0 0;padding:0">Avisaos por WhatsApp cuando le toque al siguiente.</p>';
   }
   function render(){
     var m=$("mes").value;if(!m)return;turn(m);
@@ -294,7 +292,7 @@ select{color-scheme:light dark}
     $("day").innerHTML=h;
     [].forEach.call($("day").querySelectorAll("[data-l]"),function(b){b.onclick=function(){
       var l=b.dataset.l,t=turnos(d,l)[+b.dataset.i];if(why(d,l,t))return;
-      if(ONLINE){b.disabled=true;send({accion:"anadir",persona:S.me,fecha:d,lugar:LNAME[l],ini:t.a,fin:t.b,ronda:S.round}).then(function(j){return refresh().then(function(){if(!j.ok)net(j.error||"No se pudo guardar.","no");else if(j.avisos&&j.avisos.length)net("Guardada, pero: "+j.avisos.join(" · "),"wr")})}).catch(function(){net("No se pudo guardar. Inténtalo de nuevo.","no")});return}
+      if(ONLINE){b.disabled=true;send({accion:"anadir",persona:S.me,fecha:d,lugar:LNAME[l],ini:t.a,fin:t.b,ronda:S.round}).then(function(j){return refresh().then(function(){if(!j.ok)net(j.error||"No se pudo guardar.","no");else if(j.avisos&&j.avisos.length)net("Guardada, pero: "+j.avisos.join(" · "),j.avisos.join(" ").indexOf("NO HAY HUECO")>=0?"no":"wr")})}).catch(function(){net("No se pudo guardar. Inténtalo de nuevo.","no")});return}
       S.items.push({id:Date.now()+Math.random(),p:S.me,c:"R1",r:S.round,d:d,l:l,a:t.a,b:t.b,h:t.h});save();render()}});
     [].forEach.call($("day").querySelectorAll("[data-rm]"),function(b){b.onclick=function(){
       if(ONLINE){b.disabled=true;send({accion:"quitar",persona:S.me,id:b.dataset.rm}).then(function(j){return refresh().then(function(){if(!j.ok)net(j.error||"No se pudo quitar.","no");else if(j.avisos&&j.avisos.length)net("Quitada, pero: "+j.avisos.join(" · "),"wr")})}).catch(function(){net("No se pudo quitar. Inténtalo de nuevo.","no")});return}
@@ -327,7 +325,7 @@ select{color-scheme:light dark}
     g.forEach(function(x){o.tot+=x.h;if(x.l==="HRV"){o.urg+=x.h;o.nh++}else o.nr++});return o}
   function miss(o,mn){var f=[];if(o.tot<mn)f.push("faltan "+(mn-o.tot)+" h");if(o.nh<2)f.push((2-o.nh)+" guardia(s) en HRV");if(o.urg<14)f.push((14-o.urg)+" h de urgencias");if(o.nr<1)f.push("1 guardia rural");return f}
   function todos(m){
-    var cur=seq(m)[S.ti],CL={HRV:"hrv",ALF:"alf",VIL:"vil",ZUE:"zue"},mo2=+m.slice(5);
+    var cur=null,CL={HRV:"hrv",ALF:"alf",VIL:"vil",ZUE:"zue"},mo2=+m.slice(5);
     var out='<div class="hl"><span><i class="dot" style="background:var(--c-hrv)"></i>HRV</span><span><i class="dot" style="background:var(--c-alf)"></i>Alfajarín</span><span><i class="dot" style="background:var(--c-vil)"></i>Villamayor</span><span><i class="dot" style="background:var(--c-zue)"></i>Zuera</span><span>★ festivo (domingo o festivo)</span><span>| marca de 35 h</span></div>';
     order(m).forEach(function(n){
       var o={HRV:0,ALF:0,VIL:0,ZUE:0},tot=0,ds=[];
