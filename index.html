@@ -138,15 +138,6 @@ select{color-scheme:light dark}
 
   <div class="col">
   <div class="card">
-    <h2>Tu mes</h2>
-    <div class="grid">
-      <label class="f">Mi mínimo este mes (h)<input id="mn" type="number" min="0" max="60" step="1" value="35"></label>
-      <label class="f">Motivo si es menor (vacaciones…)<input id="mw" type="text"></label>
-    </div>
-    <div id="sum" style="margin-top:8px"></div>
-  </div>
-
-  <div class="card">
     <h2>Sueldo estimado del mes</h2>
     <div class="grid">
       <label class="f">€/hora no festiva (L–S)<input id="pl" type="number" readonly tabindex="-1" inputmode="decimal" min="0" step="any"></label>
@@ -283,7 +274,7 @@ select{color-scheme:light dark}
     }
     $("cal").innerHTML=h;
     [].forEach.call($("cal").querySelectorAll("button[data-d]"),function(b){b.onclick=function(){sel=b.dataset.d;render()}});
-    day();summary(m);pay(m);todos(m);
+    day();pay(m);todos(m);
   }
 
   function day(){
@@ -335,20 +326,6 @@ select{color-scheme:light dark}
   function stats(n,m){var g=IT().filter(function(x){return x.p===n&&x.d.slice(0,7)===m}),o={tot:0,urg:0,nh:0,nr:0};
     g.forEach(function(x){o.tot+=x.h;if(x.l==="HRV"){o.urg+=x.h;o.nh++}else o.nr++});return o}
   function miss(o,mn){var f=[];if(o.tot<mn)f.push("faltan "+(mn-o.tot)+" h");if(o.nh<2)f.push((2-o.nh)+" guardia(s) en HRV");if(o.urg<14)f.push((14-o.urg)+" h de urgencias");if(o.nr<1)f.push("1 guardia rural");return f}
-  function summary(m){
-    var o=stats(S.me,m),k=S.min[key(S.me,m)]||{v:35,w:""},f=miss(o,k.v);
-    $("mn").value=k.v;$("mw").value=k.w;
-    function r(a,b){return'<div class="row"><span>'+a+'</span><span>'+b+'</span></div>'}
-    var est=f.length?'<span class="wr">'+(S.round===2?"Falta: ":"Aún puedes completarlo en la siguiente ronda: ")+f.join(", ")+'</span>':'<span class="ok">✓ Cumples los mínimos</span>';
-    function q(a,b,ok){return'<div class="row"><span>'+a+'</span><span class="'+(ok?'ok':'wr')+'">'+(ok?'✓ ':'')+b+'</span></div>'}
-    $("sum").innerHTML=q("Horas totales (mínimo "+k.v+" h)",o.tot+" de "+k.v+" h",o.tot>=k.v)+
-      q("Urgencias HRV (mín. 2 guardias y 14 h)",o.nh+" de 2 guardias · "+o.urg+" de 14 h",o.nh>=2&&o.urg>=14)+
-      q("Rural (mín. 1 guardia)",o.nr+" de 1 guardia"+(o.nr?" · "+(o.tot-o.urg)+" h":""),o.nr>=1)+
-      (S.round===1&&o.tot>35?'<div class="row"><span class="wr">⚠ Te estás pasando de 35 h</span><span class="wr">tope 40 h</span></div>':"")+
-      '<div class="row"><span>Estado</span>'+est+'</div>'+(k.v<35?'<p class="wr">Mínimo reducido: pendiente de visto bueno de la Unidad Docente.</p>':"");
-  }
-  function setMin(){var m=mo(),k={v:Math.max(0,+$("mn").value||0),w:$("mw").value.trim()};S.min[key(S.me,m)]=k;save();summary(m)}
-  $("mn").onchange=setMin;$("mw").onchange=setMin;
   function todos(m){
     var cur=seq(m)[S.ti],CL={HRV:"hrv",ALF:"alf",VIL:"vil",ZUE:"zue"},mo2=+m.slice(5);
     var out='<div class="hl"><span><i class="dot" style="background:var(--c-hrv)"></i>HRV</span><span><i class="dot" style="background:var(--c-alf)"></i>Alfajarín</span><span><i class="dot" style="background:var(--c-vil)"></i>Villamayor</span><span><i class="dot" style="background:var(--c-zue)"></i>Zuera</span><span>★ festivo (domingo o festivo)</span><span>| marca de 35 h</span></div>';
